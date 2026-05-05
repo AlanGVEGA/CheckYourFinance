@@ -1,3 +1,38 @@
 <resources>
     <string name="app_name">CheckYourFinance</string>
+
+    <string name="login_title">Login</string>
+    <string name="login_subtitle">Take control of your money, goals, and spending habits.</string>
+    <string name="register_title">Create Account</string>
+    <string name="register_subtitle">Start tracking your personal finances today.</string>
+
+    <string name="hint_full_name">Full name</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_confirm_password">Confirm password</string>
+
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="action_login">Login</string>
+    <string name="action_sign_up">Sign Up</string>
+
+    <string name="divider_or">or</string>
+
+    <string name="continue_google">Continue with Google</string>
+    <string name="continue_apple">Continue with Apple</string>
+    <string name="continue_guest">Continue as Guest</string>
+
+    <string name="footer_need_account">Need an account?</string>
+    <string name="footer_sign_up">Sign up</string>
+    <string name="footer_have_account">Already have an account?</string>
+    <string name="footer_log_in">Log in</string>
+
+    <string name="error_field_required">This field is required</string>
+    <string name="error_email_invalid">Enter a valid email address</string>
+    <string name="error_password_short">Password must be at least 6 characters</string>
+    <string name="error_confirm_password_mismatch">Passwords do not match</string>
+
+    <string name="toast_login_validation_ok">Login validation successful</string>
+    <string name="toast_register_validation_ok">Registration validation successful</string>
+
+    <string name="content_desc_finance_icon">Finance</string>
 </resources>
