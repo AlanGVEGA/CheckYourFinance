@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="screen_padding_horizontal">24dp</dimen>
+    <dimen name="screen_padding_top">20dp</dimen>
+    <dimen name="section_spacing">18dp</dimen>
+    <dimen name="card_radius_lg">24dp</dimen>
+    <dimen name="card_radius_md">20dp</dimen>
+    <dimen name="card_padding">18dp</dimen>
+    <dimen name="icon_button_size">44dp</dimen>
+    <dimen name="bottom_nav_height">74dp</dimen>
+</resources>

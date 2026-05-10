@@ -13,4 +13,10 @@
     <color name="hero_circle_fill">#E5F2DD</color>
     <color name="ripple_on_accent">#3310210D</color>
     <color name="ripple_on_white">#1A123D08</color>
+
+    <color name="category_food">#8BE85F</color>
+    <color name="category_transport">#6FDDB0</color>
+    <color name="category_shopping">#9BC9FF</color>
+    <color name="category_bills">#F3C969</color>
+    <color name="category_entertainment">#D3A4FF</color>
 </resources>

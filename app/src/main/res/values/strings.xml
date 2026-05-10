@@ -35,4 +35,72 @@
     <string name="toast_register_validation_ok">Registration validation successful</string>
 
     <string name="content_desc_finance_icon">Finance</string>
+
+    <string name="toast_forgot_password_coming_soon">Password recovery coming soon</string>
+    <string name="toast_google_coming_soon">Google sign-in coming soon</string>
+    <string name="toast_apple_coming_soon">Apple sign-in coming soon</string>
+
+    <string name="dashboard_greeting">Hello,</string>
+    <string name="dashboard_user_name_placeholder">Gabriel</string>
+    <string name="dashboard_subtitle">Here’s your financial overview</string>
+    <string name="dashboard_total_balance">Total Balance</string>
+    <string name="dashboard_balance_amount">$4,570.80</string>
+    <string name="dashboard_balance_trend">+12.5% vs last month</string>
+
+    <string name="dashboard_summary">Summary</string>
+    <string name="dashboard_this_month">This Month</string>
+    <string name="dashboard_income">Income</string>
+    <string name="dashboard_income_amount">$6,200.00</string>
+    <string name="dashboard_income_trend">+8.2%</string>
+    <string name="dashboard_expenses">Expenses</string>
+    <string name="dashboard_expenses_amount">$1,629.20</string>
+    <string name="dashboard_expenses_trend">-3.4%</string>
+    <string name="dashboard_savings">Savings</string>
+    <string name="dashboard_savings_amount">$2,482.00</string>
+    <string name="dashboard_savings_trend">+15.6%</string>
+
+    <string name="dashboard_spending_by_category">Spending by Category</string>
+    <string name="dashboard_view_all">View All</string>
+    <string name="category_food_dining">Food &amp; Dining</string>
+    <string name="category_transport">Transport</string>
+    <string name="category_shopping">Shopping</string>
+    <string name="category_bills_utilities">Bills &amp; Utilities</string>
+    <string name="category_entertainment">Entertainment</string>
+
+    <string name="dashboard_recent_transactions">Recent Transactions</string>
+    <string name="tx_amazon_merchant">Amazon</string>
+    <string name="tx_starbucks_merchant">Starbucks</string>
+    <string name="tx_uber_merchant">Uber</string>
+    <string name="tx_today">Today</string>
+    <string name="tx_yesterday">Yesterday</string>
+    <string name="tx_amount_amazon">-$120.50</string>
+    <string name="tx_amount_starbucks">-$8.90</string>
+    <string name="tx_amount_uber">-$15.40</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_transactions">Transactions</string>
+    <string name="nav_budget">Budget</string>
+    <string name="nav_profile">Profile</string>
+    <string name="toast_create_expense_coming_soon">Create expense coming soon</string>
+    <string name="toast_transactions_view_coming_soon">Transactions view coming soon</string>
+    <string name="toast_budget_view_coming_soon">Budget view coming soon</string>
+    <string name="toast_profile_view_coming_soon">Profile view coming soon</string>
+    <string name="toast_notifications_coming_soon">Notifications coming soon</string>
+    <string name="toast_profile_settings_coming_soon">Profile settings coming soon</string>
+    <string name="toast_categories_view_coming_soon">Categories view coming soon</string>
+
+    <string name="content_desc_notifications">Notifications</string>
+    <string name="content_desc_profile">Profile</string>
+    <string name="content_desc_add">Add</string>
+
+    <string name="dashboard_food_amount">$620.40</string>
+    <string name="dashboard_food_pct">38%</string>
+    <string name="dashboard_transport_amount">$320.50</string>
+    <string name="dashboard_transport_pct">20%</string>
+    <string name="dashboard_shopping_amount">$280.30</string>
+    <string name="dashboard_shopping_pct">17%</string>
+    <string name="dashboard_bills_amount">$210.00</string>
+    <string name="dashboard_bills_pct">13%</string>
+    <string name="dashboard_entertainment_amount">$198.00</string>
+    <string name="dashboard_entertainment_pct">12%</string>
 </resources>

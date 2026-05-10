@@ -1,5 +1,6 @@
 package com.example.checkyourfinance
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
@@ -41,7 +42,8 @@ class MainActivity : AppCompatActivity() {
         applyAuthModeUi()
 
         findViewById<View>(R.id.button_primary_action).setOnClickListener {
-            if (isLoginMode) validateAndToastLogin() else validateAndToastRegister()
+            val ok = if (isLoginMode) validateAndToastLogin() else validateAndToastRegister()
+            if (ok) navigateToDashboard()
         }
 
         findViewById<View>(R.id.text_footer_action).setOnClickListener {
@@ -49,6 +51,31 @@ class MainActivity : AppCompatActivity() {
             clearFieldErrors()
             applyAuthModeUi()
         }
+
+        findViewById<View>(R.id.button_forgot_password).setOnClickListener {
+            Toast.makeText(this, R.string.toast_forgot_password_coming_soon, Toast.LENGTH_SHORT)
+                .show()
+        }
+
+        findViewById<View>(R.id.button_continue_google).setOnClickListener {
+            Toast.makeText(this, R.string.toast_google_coming_soon, Toast.LENGTH_SHORT).show()
+        }
+
+        findViewById<View>(R.id.button_continue_apple).setOnClickListener {
+            Toast.makeText(this, R.string.toast_apple_coming_soon, Toast.LENGTH_SHORT).show()
+        }
+
+        findViewById<View>(R.id.button_continue_guest).setOnClickListener {
+            navigateToDashboard()
+        }
+    }
+
+    private fun navigateToDashboard() {
+        startActivity(
+            Intent(this, DashboardActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
+        )
     }
 
     private fun bindViews() {
