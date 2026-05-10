@@ -1,5 +1,6 @@
 package com.example.checkyourfinance
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -38,14 +39,14 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.text_recent_view_all).setOnClickListener {
-            Toast.makeText(this, R.string.toast_transactions_view_coming_soon, Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, ExpenseListActivity::class.java))
         }
 
         findViewById<View>(R.id.nav_home).setOnClickListener {
             // Already on Home (active)
         }
         findViewById<View>(R.id.nav_transactions).setOnClickListener {
-            Toast.makeText(this, R.string.toast_transactions_view_coming_soon, Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, ExpenseListActivity::class.java))
         }
         findViewById<View>(R.id.nav_add).setOnClickListener {
             Toast.makeText(this, R.string.toast_create_expense_coming_soon, Toast.LENGTH_SHORT).show()

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/expense_card_background"
+    android:foreground="?attr/selectableItemBackground"
+    android:minHeight="72dp"
+    android:padding="14dp">
+
+    <View
+        android:id="@+id/view_category_indicator"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:background="@drawable/category_indicator_oval"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_expense_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/text_main"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/text_expense_amount"
+        app:layout_constraintStart_toEndOf="@id/view_category_indicator"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_expense_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_main"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_expense_category"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="6dp"
+        android:textColor="@color/text_muted"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toStartOf="@id/text_expense_date"
+        app:layout_constraintStart_toEndOf="@id/view_category_indicator"
+        app:layout_constraintTop_toBottomOf="@id/text_expense_title" />
+
+    <TextView
+        android:id="@+id/text_expense_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textColor="@color/text_muted"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_expense_amount" />
+
+    <TextView
+        android:id="@+id/text_expense_favorite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/expense_favorite_star"
+        android:textColor="@color/accent_bright_green"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_expense_date" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

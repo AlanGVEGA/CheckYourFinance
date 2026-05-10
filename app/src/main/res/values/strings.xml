@@ -92,6 +92,8 @@
     <string name="content_desc_notifications">Notifications</string>
     <string name="content_desc_profile">Profile</string>
     <string name="content_desc_add">Add</string>
+    <string name="content_desc_back">Back</string>
+    <string name="content_desc_search">Search</string>
 
     <string name="dashboard_food_amount">$620.40</string>
     <string name="dashboard_food_pct">38%</string>
@@ -103,4 +105,33 @@
     <string name="dashboard_bills_pct">13%</string>
     <string name="dashboard_entertainment_amount">$198.00</string>
     <string name="dashboard_entertainment_pct">12%</string>
+
+    <!-- Expense List -->
+    <string name="expense_list_title">Transactions</string>
+    <string name="expense_list_subtitle">Track your recent expenses</string>
+    <string name="expense_total_spent">Total Spent</string>
+    <string name="expense_total_spent_amount">$1,629.20</string>
+    <string name="expense_this_month">This month</string>
+    <string name="expense_transactions_count_placeholder">12 transactions</string>
+    <string name="expense_amount_format">-$%.2f</string>
+    <string name="expense_favorite_star">★</string>
+
+    <string name="chip_all">All</string>
+    <string name="chip_food">Food</string>
+    <string name="chip_transport">Transport</string>
+    <string name="chip_shopping">Shopping</string>
+    <string name="chip_bills">Bills</string>
+    <string name="chip_entertainment">Entertainment</string>
+
+    <string name="expense_empty_title">No expenses found</string>
+    <string name="expense_empty_subtitle">Try another category or add your first expense.</string>
+    <string name="expense_empty_add_button">Add Expense</string>
+
+    <string name="toast_expense_detail_coming_soon">Expense detail coming soon</string>
+    <string name="toast_search_coming_soon">Search coming soon</string>
+
+    <plurals name="expense_transactions_count">
+        <item quantity="one">%d transaction</item>
+        <item quantity="other">%d transactions</item>
+    </plurals>
 </resources>
