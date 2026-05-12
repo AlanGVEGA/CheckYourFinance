@@ -19,4 +19,6 @@
     <color name="category_shopping">#9BC9FF</color>
     <color name="category_bills">#F3C969</color>
     <color name="category_entertainment">#D3A4FF</color>
+
+    <color name="text_error">#BA1A1A</color>
 </resources>

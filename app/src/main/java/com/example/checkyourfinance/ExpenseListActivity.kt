@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -16,17 +17,17 @@ class ExpenseListActivity : AppCompatActivity() {
 
     private lateinit var adapter: ExpenseAdapter
 
-    private val allExpenses: List<ExpenseUiModel> = listOf(
-        ExpenseUiModel(1, "Starbucks", "Food & Dining", 8.90, "Today", CAT_FOOD, isFavorite = true),
-        ExpenseUiModel(2, "Amazon", "Shopping", 120.50, "Today", CAT_SHOPPING),
-        ExpenseUiModel(3, "Uber", "Transport", 15.40, "Yesterday", CAT_TRANSPORT),
-        ExpenseUiModel(4, "Netflix", "Entertainment", 15.99, "May 8", CAT_ENTERTAINMENT),
-        ExpenseUiModel(5, "Electricity Bill", "Bills & Utilities", 95.00, "May 6", CAT_BILLS),
-        ExpenseUiModel(6, "Target", "Shopping", 42.30, "May 4", CAT_SHOPPING),
-        ExpenseUiModel(7, "McDonald's", "Food & Dining", 12.75, "May 3", CAT_FOOD)
-    )
+    private val allExpenses: List<ExpenseUiModel> = ExpenseSampleData.expenses
 
-    private var selectedCategory: String = CAT_ALL
+    private var selectedCategory: String = ExpenseCategories.ALL
+
+    private val expenseFormLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            Toast.makeText(this, R.string.toast_expense_list_refresh_pending, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +45,7 @@ class ExpenseListActivity : AppCompatActivity() {
         setupRecycler()
         bindChips()
 
-        setSelectedChip(CAT_ALL)
+        setSelectedChip(ExpenseCategories.ALL)
         renderList()
     }
 
@@ -60,30 +61,40 @@ class ExpenseListActivity : AppCompatActivity() {
 
     private fun bindFab() {
         findViewById<FloatingActionButton>(R.id.fab_add_expense).setOnClickListener {
-            Toast.makeText(this, R.string.toast_create_expense_coming_soon, Toast.LENGTH_SHORT).show()
+            expenseFormLauncher.launch(ExpenseFormActivity.createIntent(this))
         }
 
         findViewById<View>(R.id.button_empty_add).setOnClickListener {
-            Toast.makeText(this, R.string.toast_create_expense_coming_soon, Toast.LENGTH_SHORT).show()
+            expenseFormLauncher.launch(ExpenseFormActivity.createIntent(this))
         }
     }
 
     private fun setupRecycler() {
         val recycler = findViewById<RecyclerView>(R.id.recycler_expenses)
         recycler.layoutManager = LinearLayoutManager(this)
-        adapter = ExpenseAdapter { _ ->
-            Toast.makeText(this, R.string.toast_expense_detail_coming_soon, Toast.LENGTH_SHORT).show()
-        }
+        adapter = ExpenseAdapter(
+            onItemClick = {
+                Toast.makeText(this, R.string.toast_expense_detail_coming_soon, Toast.LENGTH_SHORT).show()
+            },
+            onEditClick = { expense ->
+                expenseFormLauncher.launch(ExpenseFormActivity.editIntent(this, expense.id))
+            },
+            onItemLongClick = { expense ->
+                expenseFormLauncher.launch(ExpenseFormActivity.editIntent(this, expense.id))
+            }
+        )
         recycler.adapter = adapter
     }
 
     private fun bindChips() {
-        findViewById<View>(R.id.chip_all).setOnClickListener { onChipClicked(CAT_ALL) }
-        findViewById<View>(R.id.chip_food).setOnClickListener { onChipClicked(CAT_FOOD) }
-        findViewById<View>(R.id.chip_transport).setOnClickListener { onChipClicked(CAT_TRANSPORT) }
-        findViewById<View>(R.id.chip_shopping).setOnClickListener { onChipClicked(CAT_SHOPPING) }
-        findViewById<View>(R.id.chip_bills).setOnClickListener { onChipClicked(CAT_BILLS) }
-        findViewById<View>(R.id.chip_entertainment).setOnClickListener { onChipClicked(CAT_ENTERTAINMENT) }
+        findViewById<View>(R.id.chip_all).setOnClickListener { onChipClicked(ExpenseCategories.ALL) }
+        findViewById<View>(R.id.chip_food).setOnClickListener { onChipClicked(ExpenseCategories.FOOD) }
+        findViewById<View>(R.id.chip_transport).setOnClickListener { onChipClicked(ExpenseCategories.TRANSPORT) }
+        findViewById<View>(R.id.chip_shopping).setOnClickListener { onChipClicked(ExpenseCategories.SHOPPING) }
+        findViewById<View>(R.id.chip_bills).setOnClickListener { onChipClicked(ExpenseCategories.BILLS) }
+        findViewById<View>(R.id.chip_entertainment).setOnClickListener {
+            onChipClicked(ExpenseCategories.ENTERTAINMENT)
+        }
     }
 
     private fun onChipClicked(category: String) {
@@ -94,12 +105,12 @@ class ExpenseListActivity : AppCompatActivity() {
     private fun setSelectedChip(category: String) {
         selectedCategory = category
 
-        setChipSelected(R.id.chip_all, category == CAT_ALL)
-        setChipSelected(R.id.chip_food, category == CAT_FOOD)
-        setChipSelected(R.id.chip_transport, category == CAT_TRANSPORT)
-        setChipSelected(R.id.chip_shopping, category == CAT_SHOPPING)
-        setChipSelected(R.id.chip_bills, category == CAT_BILLS)
-        setChipSelected(R.id.chip_entertainment, category == CAT_ENTERTAINMENT)
+        setChipSelected(R.id.chip_all, category == ExpenseCategories.ALL)
+        setChipSelected(R.id.chip_food, category == ExpenseCategories.FOOD)
+        setChipSelected(R.id.chip_transport, category == ExpenseCategories.TRANSPORT)
+        setChipSelected(R.id.chip_shopping, category == ExpenseCategories.SHOPPING)
+        setChipSelected(R.id.chip_bills, category == ExpenseCategories.BILLS)
+        setChipSelected(R.id.chip_entertainment, category == ExpenseCategories.ENTERTAINMENT)
     }
 
     private fun setChipSelected(chipId: Int, selected: Boolean) {
@@ -114,7 +125,7 @@ class ExpenseListActivity : AppCompatActivity() {
     }
 
     private fun renderList() {
-        val filtered = if (selectedCategory == CAT_ALL) {
+        val filtered = if (selectedCategory == ExpenseCategories.ALL) {
             allExpenses
         } else {
             allExpenses.filter { it.categoryType == selectedCategory }
@@ -134,14 +145,4 @@ class ExpenseListActivity : AppCompatActivity() {
         findViewById<View>(R.id.empty_state_container).visibility = if (isEmpty) View.VISIBLE else View.GONE
         findViewById<View>(R.id.recycler_expenses).visibility = if (isEmpty) View.GONE else View.VISIBLE
     }
-
-    companion object {
-        const val CAT_ALL = "ALL"
-        const val CAT_FOOD = "FOOD"
-        const val CAT_TRANSPORT = "TRANSPORT"
-        const val CAT_SHOPPING = "SHOPPING"
-        const val CAT_BILLS = "BILLS"
-        const val CAT_ENTERTAINMENT = "ENTERTAINMENT"
-    }
 }
-

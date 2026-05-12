@@ -7,6 +7,7 @@ data class ExpenseUiModel(
     val amount: Double,
     val date: String,
     val categoryType: String,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val description: String = ""
 )
 

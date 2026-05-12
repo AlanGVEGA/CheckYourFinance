@@ -1,15 +1,18 @@
 package com.example.checkyourfinance
 
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import android.graphics.drawable.GradientDrawable
 
 class ExpenseAdapter(
-    private val onItemClick: (ExpenseUiModel) -> Unit
+    private val onItemClick: (ExpenseUiModel) -> Unit,
+    private val onEditClick: (ExpenseUiModel) -> Unit,
+    private val onItemLongClick: (ExpenseUiModel) -> Unit
 ) : RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder>() {
 
     private val items: MutableList<ExpenseUiModel> = mutableListOf()
@@ -22,7 +25,7 @@ class ExpenseAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_expense, parent, false)
-        return ExpenseViewHolder(view, onItemClick)
+        return ExpenseViewHolder(view, onItemClick, onEditClick, onItemLongClick)
     }
 
     override fun onBindViewHolder(holder: ExpenseViewHolder, position: Int) {
@@ -33,7 +36,9 @@ class ExpenseAdapter(
 
     class ExpenseViewHolder(
         itemView: View,
-        private val onClick: (ExpenseUiModel) -> Unit
+        private val onClick: (ExpenseUiModel) -> Unit,
+        private val onEditClick: (ExpenseUiModel) -> Unit,
+        private val onLongClick: (ExpenseUiModel) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
 
         private val title: TextView = itemView.findViewById(R.id.text_expense_title)
@@ -42,6 +47,7 @@ class ExpenseAdapter(
         private val amount: TextView = itemView.findViewById(R.id.text_expense_amount)
         private val indicator: View = itemView.findViewById(R.id.view_category_indicator)
         private val favorite: TextView = itemView.findViewById(R.id.text_expense_favorite)
+        private val editButton: ImageButton = itemView.findViewById(R.id.button_edit_expense)
 
         fun bind(model: ExpenseUiModel) {
             title.text = model.title
@@ -51,11 +57,12 @@ class ExpenseAdapter(
             favorite.visibility = if (model.isFavorite) View.VISIBLE else View.GONE
 
             val indicatorColorRes = when (model.categoryType) {
-                ExpenseListActivity.CAT_FOOD -> R.color.category_food
-                ExpenseListActivity.CAT_TRANSPORT -> R.color.category_transport
-                ExpenseListActivity.CAT_SHOPPING -> R.color.category_shopping
-                ExpenseListActivity.CAT_BILLS -> R.color.category_bills
-                ExpenseListActivity.CAT_ENTERTAINMENT -> R.color.category_entertainment
+                ExpenseCategories.FOOD -> R.color.category_food
+                ExpenseCategories.TRANSPORT -> R.color.category_transport
+                ExpenseCategories.SHOPPING -> R.color.category_shopping
+                ExpenseCategories.BILLS -> R.color.category_bills
+                ExpenseCategories.ENTERTAINMENT -> R.color.category_entertainment
+                ExpenseCategories.OTHER -> R.color.border_soft
                 else -> R.color.border_soft
             }
             (indicator.background as? GradientDrawable)?.setColor(
@@ -63,7 +70,11 @@ class ExpenseAdapter(
             )
 
             itemView.setOnClickListener { onClick(model) }
+            itemView.setOnLongClickListener {
+                onLongClick(model)
+                true
+            }
+            editButton.setOnClickListener { onEditClick(model) }
         }
     }
 }
-

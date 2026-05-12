@@ -134,4 +134,42 @@
         <item quantity="one">%d transaction</item>
         <item quantity="other">%d transactions</item>
     </plurals>
+
+    <!-- Expense Form -->
+    <string name="category_other">Other</string>
+    <string name="expense_category_placeholder">Select category</string>
+
+    <string name="expense_form_title_add">Add Expense</string>
+    <string name="expense_form_subtitle_add">Record a new transaction</string>
+    <string name="expense_form_action_save">Save Expense</string>
+
+    <string name="expense_form_title_edit">Edit Expense</string>
+    <string name="expense_form_subtitle_edit">Update transaction details</string>
+    <string name="expense_form_action_update">Update Expense</string>
+
+    <string name="expense_field_title">Title</string>
+    <string name="expense_field_amount">Amount</string>
+    <string name="expense_field_category_label">Category</string>
+    <string name="expense_field_date">Date</string>
+    <string name="expense_field_description">Description (optional)</string>
+
+    <string name="error_amount_must_be_positive">Amount must be greater than 0</string>
+    <string name="error_amount_invalid">Enter a valid amount</string>
+    <string name="error_expense_category_required">Please select a category</string>
+
+    <string name="toast_expense_created_success">Expense created successfully</string>
+    <string name="toast_expense_updated_success">Expense updated successfully</string>
+    <string name="toast_expense_list_refresh_pending">Expense list will refresh when persistence is connected</string>
+
+    <string name="content_desc_edit_expense">Edit expense</string>
+
+    <string-array name="expense_form_categories">
+        <item>@string/expense_category_placeholder</item>
+        <item>@string/category_food_dining</item>
+        <item>@string/category_transport</item>
+        <item>@string/category_shopping</item>
+        <item>@string/category_bills_utilities</item>
+        <item>@string/category_entertainment</item>
+        <item>@string/category_other</item>
+    </string-array>
 </resources>
