@@ -25,8 +25,20 @@ class ExpenseListActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            Toast.makeText(this, R.string.toast_expense_list_refresh_pending, Toast.LENGTH_SHORT).show()
+            showExpenseListRefreshPendingToast()
         }
+    }
+
+    private val expenseDetailLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            showExpenseListRefreshPendingToast()
+        }
+    }
+
+    private fun showExpenseListRefreshPendingToast() {
+        Toast.makeText(this, R.string.toast_expense_list_refresh_pending, Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,8 +85,8 @@ class ExpenseListActivity : AppCompatActivity() {
         val recycler = findViewById<RecyclerView>(R.id.recycler_expenses)
         recycler.layoutManager = LinearLayoutManager(this)
         adapter = ExpenseAdapter(
-            onItemClick = {
-                Toast.makeText(this, R.string.toast_expense_detail_coming_soon, Toast.LENGTH_SHORT).show()
+            onItemClick = { expense ->
+                expenseDetailLauncher.launch(ExpenseDetailActivity.createIntent(this, expense.id))
             },
             onEditClick = { expense ->
                 expenseFormLauncher.launch(ExpenseFormActivity.editIntent(this, expense.id))

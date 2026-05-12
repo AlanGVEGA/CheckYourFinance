@@ -127,7 +127,7 @@
     <string name="expense_empty_subtitle">Try another category or add your first expense.</string>
     <string name="expense_empty_add_button">Add Expense</string>
 
-    <string name="toast_expense_detail_coming_soon">Expense detail coming soon</string>
+    <string name="toast_expense_not_found">Expense not found</string>
     <string name="toast_search_coming_soon">Search coming soon</string>
 
     <plurals name="expense_transactions_count">
@@ -162,6 +162,37 @@
     <string name="toast_expense_list_refresh_pending">Expense list will refresh when persistence is connected</string>
 
     <string name="content_desc_edit_expense">Edit expense</string>
+
+    <!-- Expense Detail -->
+    <string name="expense_detail_screen_title">Expense Detail</string>
+    <string name="expense_detail_screen_subtitle">Review your transaction</string>
+    <string name="expense_detail_label_description">Description</string>
+    <string name="expense_detail_favorite_marked">Marked as favorite</string>
+    <string name="expense_detail_favorite_not">Not favorite</string>
+    <string name="expense_detail_metadata_heading">Metadata</string>
+    <string name="expense_detail_label_transaction_id">Transaction ID</string>
+    <string name="expense_detail_transaction_id_format">TXN-%1$04d</string>
+    <string name="expense_detail_label_category_type">Category type</string>
+    <string name="expense_detail_label_status">Status</string>
+    <string name="expense_detail_status_recorded">Recorded</string>
+    <string name="expense_detail_label_payment_method">Payment method</string>
+    <string name="expense_detail_payment_not_specified">Not specified</string>
+    <string name="expense_detail_actions_heading">Actions</string>
+    <string name="expense_detail_action_edit">Edit Expense</string>
+    <string name="expense_detail_action_delete">Delete Expense</string>
+    <string name="expense_detail_action_toggle_favorite">Toggle Favorite</string>
+    <string name="expense_detail_action_share">Share</string>
+    <string name="expense_delete_dialog_title">Delete expense?</string>
+    <string name="expense_delete_dialog_message">This action will remove the transaction from your list once persistence is connected.</string>
+    <string name="expense_delete_dialog_positive">Delete</string>
+    <string name="expense_delete_dialog_negative">Cancel</string>
+    <string name="toast_expense_deleted_success">Expense deleted successfully</string>
+    <string name="toast_favorite_status_updated">Favorite status updated</string>
+    <string name="expense_share_chooser_title">Share expense</string>
+    <string name="expense_share_text_template">Title: %1$s\nAmount: %2$s\nCategory: %3$s\nDate: %4$s\nDescription: %5$s</string>
+    <string name="expense_detail_description_empty">No description added</string>
+    <string name="expense_share_description_empty">(none)</string>
+    <string name="content_desc_favorite_status">Favorite status</string>
 
     <string-array name="expense_form_categories">
         <item>@string/expense_category_placeholder</item>

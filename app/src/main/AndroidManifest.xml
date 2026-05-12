@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CheckYourFinance">
         <activity
+            android:name=".ExpenseDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".ExpenseFormActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
