@@ -3,29 +3,37 @@ package com.example.checkyourfinance
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import android.widget.Toast
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ExpenseListActivity : AppCompatActivity() {
 
     private lateinit var adapter: ExpenseAdapter
+    private lateinit var textTotalSpentAmount: TextView
 
-    private val allExpenses: List<ExpenseUiModel> = ExpenseSampleData.expenses
+    private var backingList: List<ExpenseUiModel> = emptyList()
 
     private var selectedCategory: String = ExpenseCategories.ALL
+
+    private val app: CheckYourFinanceApplication
+        get() = application as CheckYourFinanceApplication
 
     private val expenseFormLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            showExpenseListRefreshPendingToast()
+            reloadFromPersistence()
         }
     }
 
@@ -33,12 +41,8 @@ class ExpenseListActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            showExpenseListRefreshPendingToast()
+            reloadFromPersistence()
         }
-    }
-
-    private fun showExpenseListRefreshPendingToast() {
-        Toast.makeText(this, R.string.toast_expense_list_refresh_pending, Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,13 +56,36 @@ class ExpenseListActivity : AppCompatActivity() {
             insets
         }
 
+        textTotalSpentAmount = findViewById(R.id.text_total_spent_amount)
+
         bindHeader()
         bindFab()
         setupRecycler()
         bindChips()
 
         setSelectedChip(ExpenseCategories.ALL)
-        renderList()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        reloadFromPersistence()
+    }
+
+    private fun reloadFromPersistence() {
+        lifecycleScope.launch {
+            val session = app.sessionManager
+            val list = withContext(Dispatchers.IO) {
+                if (session.isLoggedIn()) {
+                    app.repository.getExpensesForUser(session.getUserId())
+                } else {
+                    ExpenseSampleData.expenses
+                }
+            }
+            backingList = list
+            val total = list.sumOf { it.amount }
+            textTotalSpentAmount.text = getString(R.string.expense_amount_format, total)
+            renderList()
+        }
     }
 
     private fun bindHeader() {
@@ -138,9 +165,9 @@ class ExpenseListActivity : AppCompatActivity() {
 
     private fun renderList() {
         val filtered = if (selectedCategory == ExpenseCategories.ALL) {
-            allExpenses
+            backingList
         } else {
-            allExpenses.filter { it.categoryType == selectedCategory }
+            backingList.filter { it.categoryType == selectedCategory }
         }
 
         adapter.submitList(filtered)

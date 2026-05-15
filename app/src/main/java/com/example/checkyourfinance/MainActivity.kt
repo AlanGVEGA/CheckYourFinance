@@ -10,8 +10,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import com.example.checkyourfinance.data.local.PasswordHasher
+import com.example.checkyourfinance.data.model.UserEntity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,8 +33,18 @@ class MainActivity : AppCompatActivity() {
     private lateinit var inputPassword: TextInputEditText
     private lateinit var inputConfirmPassword: TextInputEditText
 
+    private val app: CheckYourFinanceApplication
+        get() = application as CheckYourFinanceApplication
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (app.sessionManager.isLoggedIn()) {
+            navigateToDashboard()
+            finish()
+            return
+        }
+
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
@@ -42,8 +58,11 @@ class MainActivity : AppCompatActivity() {
         applyAuthModeUi()
 
         findViewById<View>(R.id.button_primary_action).setOnClickListener {
-            val ok = if (isLoginMode) validateAndToastLogin() else validateAndToastRegister()
-            if (ok) navigateToDashboard()
+            if (isLoginMode) {
+                attemptLogin()
+            } else {
+                attemptRegister()
+            }
         }
 
         findViewById<View>(R.id.text_footer_action).setOnClickListener {
@@ -76,6 +95,59 @@ class MainActivity : AppCompatActivity() {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             }
         )
+    }
+
+    private fun attemptLogin() {
+        clearFieldErrors()
+        if (!validateLoginFields()) return
+
+        val email = inputEmail.text?.toString()?.trim().orEmpty()
+        val password = inputPassword.text?.toString().orEmpty()
+        val hash = PasswordHasher.hashPassword(password)
+
+        lifecycleScope.launch {
+            val user = withContext(Dispatchers.IO) {
+                app.repository.getUserByEmailAndPasswordHash(email, hash)
+            }
+            if (user == null) {
+                tilPassword.error = getString(R.string.error_login_failed)
+                Toast.makeText(this@MainActivity, R.string.error_login_failed, Toast.LENGTH_SHORT).show()
+            } else {
+                app.sessionManager.saveUserSession(user.id, user.name, user.email)
+                navigateToDashboard()
+            }
+        }
+    }
+
+    private fun attemptRegister() {
+        clearFieldErrors()
+        if (!validateRegisterFields()) return
+
+        val fullName = inputFullName.text?.toString()?.trim().orEmpty()
+        val email = inputEmail.text?.toString()?.trim().orEmpty()
+        val password = inputPassword.text?.toString().orEmpty()
+
+        lifecycleScope.launch {
+            val existing = withContext(Dispatchers.IO) {
+                app.repository.countUsersByEmail(email)
+            }
+            if (existing > 0) {
+                tilEmail.error = getString(R.string.error_email_exists)
+                return@launch
+            }
+
+            val entity = UserEntity(
+                name = fullName,
+                email = email,
+                passwordHash = PasswordHasher.hashPassword(password),
+                createdAt = System.currentTimeMillis()
+            )
+            val newId = withContext(Dispatchers.IO) {
+                app.repository.insertUser(entity).toInt()
+            }
+            app.sessionManager.saveUserSession(newId, fullName, email)
+            navigateToDashboard()
+        }
     }
 
     private fun bindViews() {
@@ -130,9 +202,7 @@ class MainActivity : AppCompatActivity() {
         tilConfirmPassword.error = null
     }
 
-    private fun validateAndToastLogin(): Boolean {
-        clearFieldErrors()
-
+    private fun validateLoginFields(): Boolean {
         val email = inputEmail.text?.toString()?.trim().orEmpty()
         val password = inputPassword.text?.toString().orEmpty()
 
@@ -154,15 +224,10 @@ class MainActivity : AppCompatActivity() {
             valid = false
         }
 
-        if (valid) {
-            Toast.makeText(this, R.string.toast_login_validation_ok, Toast.LENGTH_SHORT).show()
-        }
         return valid
     }
 
-    private fun validateAndToastRegister(): Boolean {
-        clearFieldErrors()
-
+    private fun validateRegisterFields(): Boolean {
         val fullName = inputFullName.text?.toString()?.trim().orEmpty()
         val email = inputEmail.text?.toString()?.trim().orEmpty()
         val password = inputPassword.text?.toString().orEmpty()
@@ -199,9 +264,6 @@ class MainActivity : AppCompatActivity() {
             valid = false
         }
 
-        if (valid) {
-            Toast.makeText(this, R.string.toast_register_validation_ok, Toast.LENGTH_SHORT).show()
-        }
         return valid
     }
 }
