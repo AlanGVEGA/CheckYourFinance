@@ -14,9 +14,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import com.example.checkyourfinance.data.model.ExpenseEntity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ExpenseFormActivity : AppCompatActivity() {
 
@@ -35,6 +40,10 @@ class ExpenseFormActivity : AppCompatActivity() {
     private lateinit var buttonSave: MaterialButton
 
     private var isEditMode: Boolean = false
+    private var expenseId: Int = -1
+
+    private val app: CheckYourFinanceApplication
+        get() = application as CheckYourFinanceApplication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,30 +58,34 @@ class ExpenseFormActivity : AppCompatActivity() {
 
         bindViews()
         isEditMode = intent.getBooleanExtra(EXTRA_EDIT_MODE, false)
-        val expenseId = intent.getIntExtra(EXTRA_EXPENSE_ID, -1)
+        expenseId = intent.getIntExtra(EXTRA_EXPENSE_ID, -1)
 
         setupCategorySpinner()
         applyModeUi()
-
-        if (isEditMode && expenseId >= 0) {
-            val expense = ExpenseSampleData.findById(expenseId)
-            if (expense != null) {
-                populateFromExpense(expense)
-            }
-        }
+        loadExistingExpense()
 
         findViewById<View>(R.id.button_back).setOnClickListener { finish() }
 
         buttonSave.setOnClickListener {
-            if (validateAndSubmit()) {
-                val message = if (isEditMode) {
-                    R.string.toast_expense_updated_success
+            attemptSave()
+        }
+    }
+
+    private fun loadExistingExpense() {
+        if (!isEditMode || expenseId < 0) return
+
+        lifecycleScope.launch {
+            val session = app.sessionManager
+            val loaded = withContext(Dispatchers.IO) {
+                if (session.isLoggedIn()) {
+                    app.repository.getExpenseAsUi(session.getUserId(), expenseId)
                 } else {
-                    R.string.toast_expense_created_success
+                    null
                 }
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-                setResult(Activity.RESULT_OK)
-                finish()
+            } ?: ExpenseSampleData.findById(expenseId)
+
+            if (loaded != null) {
+                populateFromExpense(loaded)
             }
         }
     }
@@ -129,8 +142,7 @@ class ExpenseFormActivity : AppCompatActivity() {
         inputDate.setText(expense.date)
         inputDescription.setText(expense.description)
 
-        val labels = resources.getStringArray(R.array.expense_form_categories)
-        val index = labels.indexOf(expense.category).takeIf { it >= 0 } ?: 0
+        val index = ExpenseCategoryPicker.spinnerIndexForCategoryLabel(this, expense.category)
         if (index > 0) {
             spinnerCategory.setSelection(index)
         }
@@ -141,6 +153,81 @@ class ExpenseFormActivity : AppCompatActivity() {
             amount.toInt().toString()
         } else {
             String.format("%.2f", amount)
+        }
+    }
+
+    private fun attemptSave() {
+        if (!validateAndSubmit()) return
+
+        if (!app.sessionManager.isLoggedIn()) {
+            Toast.makeText(this, R.string.toast_login_required_save, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val title = inputTitle.text?.toString()?.trim().orEmpty()
+        val amount = parseAmount(inputAmount.text?.toString()?.trim().orEmpty()) ?: return
+        val date = inputDate.text?.toString()?.trim().orEmpty()
+        val description = inputDescription.text?.toString()?.trim().orEmpty()
+        val categoryIndex = spinnerCategory.selectedItemPosition
+        val categoryPair = ExpenseCategoryPicker.categoryFromSpinner(this, categoryIndex) ?: return
+        val (categoryLabel, categoryType) = categoryPair
+        val userId = app.sessionManager.getUserId()
+        val now = System.currentTimeMillis()
+
+        lifecycleScope.launch {
+            if (isEditMode && expenseId >= 0) {
+                val existing = withContext(Dispatchers.IO) {
+                    app.repository.getExpense(userId, expenseId)
+                }
+                if (existing != null) {
+                    val updated = existing.copy(
+                        title = title,
+                        amount = amount,
+                        category = categoryLabel,
+                        categoryType = categoryType,
+                        date = date,
+                        description = description
+                    )
+                    withContext(Dispatchers.IO) { app.repository.updateExpense(updated) }
+                } else {
+                    val newEntity = ExpenseEntity(
+                        id = 0,
+                        userId = userId,
+                        title = title,
+                        amount = amount,
+                        category = categoryLabel,
+                        categoryType = categoryType,
+                        date = date,
+                        description = description,
+                        isFavorite = false,
+                        createdAt = now
+                    )
+                    withContext(Dispatchers.IO) { app.repository.insertExpense(newEntity) }
+                }
+            } else {
+                val newEntity = ExpenseEntity(
+                    id = 0,
+                    userId = userId,
+                    title = title,
+                    amount = amount,
+                    category = categoryLabel,
+                    categoryType = categoryType,
+                    date = date,
+                    description = description,
+                    isFavorite = false,
+                    createdAt = now
+                )
+                withContext(Dispatchers.IO) { app.repository.insertExpense(newEntity) }
+            }
+
+            val message = if (isEditMode) {
+                R.string.toast_expense_updated_success
+            } else {
+                R.string.toast_expense_created_success
+            }
+            Toast.makeText(this@ExpenseFormActivity, message, Toast.LENGTH_SHORT).show()
+            setResult(Activity.RESULT_OK)
+            finish()
         }
     }
 

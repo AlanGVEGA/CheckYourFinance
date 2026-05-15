@@ -16,13 +16,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ExpenseDetailActivity : AppCompatActivity() {
 
     private var expenseId: Int = -1
     private var isFavoriteLocal: Boolean = false
+    private var boundExpense: ExpenseUiModel? = null
 
     private lateinit var buttonBack: ImageButton
     private lateinit var categoryIndicator: View
@@ -40,12 +45,24 @@ class ExpenseDetailActivity : AppCompatActivity() {
     private lateinit var buttonToggleFavorite: MaterialButton
     private lateinit var buttonShare: MaterialButton
 
+    private val app: CheckYourFinanceApplication
+        get() = application as CheckYourFinanceApplication
+
     private val editFormLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            ExpenseSampleData.findById(expenseId)?.let { bindFromModel(it) }
-            setResult(Activity.RESULT_OK)
+            lifecycleScope.launch {
+                val model = withContext(Dispatchers.IO) { resolveExpense(expenseId) }
+                if (model == null) {
+                    setResult(Activity.RESULT_OK)
+                    finish()
+                    return@launch
+                }
+                boundExpense = model
+                bindFromModel(model)
+                setResult(Activity.RESULT_OK)
+            }
         }
     }
 
@@ -62,17 +79,41 @@ class ExpenseDetailActivity : AppCompatActivity() {
 
         bindViews()
         expenseId = intent.getIntExtra(EXTRA_EXPENSE_ID, -1)
-        val expense = ExpenseSampleData.findById(expenseId)
-        if (expense == null) {
-            Toast.makeText(this, R.string.toast_expense_not_found, Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-
-        bindFromModel(expense)
 
         buttonBack.setOnClickListener { finish() }
 
+        setActionButtonsEnabled(false)
+
+        lifecycleScope.launch {
+            val expense = withContext(Dispatchers.IO) { resolveExpense(expenseId) }
+            if (expense == null) {
+                Toast.makeText(this@ExpenseDetailActivity, R.string.toast_expense_not_found, Toast.LENGTH_SHORT).show()
+                finish()
+                return@launch
+            }
+            boundExpense = expense
+            bindFromModel(expense)
+            setActionButtonsEnabled(true)
+            wireActions()
+        }
+    }
+
+    private fun setActionButtonsEnabled(enabled: Boolean) {
+        buttonEdit.isEnabled = enabled
+        buttonDelete.isEnabled = enabled
+        buttonToggleFavorite.isEnabled = enabled
+        buttonShare.isEnabled = enabled
+    }
+
+    private suspend fun resolveExpense(id: Int): ExpenseUiModel? {
+        val session = app.sessionManager
+        if (session.isLoggedIn()) {
+            return app.repository.getExpenseAsUi(session.getUserId(), id)
+        }
+        return ExpenseSampleData.findById(id)
+    }
+
+    private fun wireActions() {
         buttonEdit.setOnClickListener {
             editFormLauncher.launch(ExpenseFormActivity.editIntent(this, expenseId))
         }
@@ -82,10 +123,19 @@ class ExpenseDetailActivity : AppCompatActivity() {
         buttonToggleFavorite.setOnClickListener {
             isFavoriteLocal = !isFavoriteLocal
             refreshFavoriteUi()
+            persistFavoriteIfPossible()
             Toast.makeText(this, R.string.toast_favorite_status_updated, Toast.LENGTH_SHORT).show()
         }
 
         buttonShare.setOnClickListener { shareCurrentExpense() }
+    }
+
+    private fun persistFavoriteIfPossible() {
+        if (!app.sessionManager.isLoggedIn()) return
+        val userId = app.sessionManager.getUserId()
+        lifecycleScope.launch(Dispatchers.IO) {
+            app.repository.updateFavorite(userId, expenseId, isFavoriteLocal)
+        }
     }
 
     private fun bindViews() {
@@ -119,6 +169,7 @@ class ExpenseDetailActivity : AppCompatActivity() {
         textCategoryType.text = categoryTypeLabel(expense.categoryType)
         applyCategoryIndicatorColor(expense.categoryType)
         refreshFavoriteUi()
+        boundExpense = expense
     }
 
     private fun refreshFavoriteUi() {
@@ -163,20 +214,30 @@ class ExpenseDetailActivity : AppCompatActivity() {
     }
 
     private fun showDeleteConfirmation() {
+        if (!app.sessionManager.isLoggedIn()) {
+            Toast.makeText(this, R.string.toast_login_required_delete, Toast.LENGTH_SHORT).show()
+            return
+        }
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.expense_delete_dialog_title)
             .setMessage(R.string.expense_delete_dialog_message)
             .setPositiveButton(R.string.expense_delete_dialog_positive) { _, _ ->
-                Toast.makeText(this, R.string.toast_expense_deleted_success, Toast.LENGTH_SHORT).show()
-                setResult(Activity.RESULT_OK)
-                finish()
+                val userId = app.sessionManager.getUserId()
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        app.repository.deleteExpense(userId, expenseId)
+                    }
+                    Toast.makeText(this@ExpenseDetailActivity, R.string.toast_expense_deleted_success, Toast.LENGTH_SHORT).show()
+                    setResult(Activity.RESULT_OK)
+                    finish()
+                }
             }
             .setNegativeButton(R.string.expense_delete_dialog_negative, null)
             .show()
     }
 
     private fun shareCurrentExpense() {
-        val expense = ExpenseSampleData.findById(expenseId) ?: return
+        val expense = boundExpense ?: return
         val amountText = getString(R.string.expense_amount_format, expense.amount)
         val descriptionText = expense.description.ifBlank {
             getString(R.string.expense_share_description_empty)
