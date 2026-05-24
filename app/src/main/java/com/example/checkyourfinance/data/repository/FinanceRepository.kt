@@ -56,8 +56,10 @@ class FinanceRepository(
         title = title,
         category = category,
         amount = amount,
+        transactionType = transactionType,
         date = date,
         categoryType = categoryType,
+        paymentMethod = paymentMethod,
         isFavorite = isFavorite,
         description = description
     )

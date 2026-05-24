@@ -40,6 +40,8 @@ class ExpenseDetailActivity : AppCompatActivity() {
     private lateinit var textFavoriteStatus: TextView
     private lateinit var textTransactionId: TextView
     private lateinit var textCategoryType: TextView
+    private lateinit var textPaymentMethod: TextView
+    private lateinit var textTransactionType: TextView
     private lateinit var buttonEdit: MaterialButton
     private lateinit var buttonDelete: MaterialButton
     private lateinit var buttonToggleFavorite: MaterialButton
@@ -150,6 +152,8 @@ class ExpenseDetailActivity : AppCompatActivity() {
         textFavoriteStatus = findViewById(R.id.text_detail_favorite_status)
         textTransactionId = findViewById(R.id.text_detail_transaction_id)
         textCategoryType = findViewById(R.id.text_detail_category_type)
+        textPaymentMethod = findViewById(R.id.text_detail_payment_method)
+        textTransactionType = findViewById(R.id.text_detail_status)
         buttonEdit = findViewById(R.id.button_edit_expense)
         buttonDelete = findViewById(R.id.button_delete_expense)
         buttonToggleFavorite = findViewById(R.id.button_toggle_favorite)
@@ -159,7 +163,7 @@ class ExpenseDetailActivity : AppCompatActivity() {
     private fun bindFromModel(expense: ExpenseUiModel) {
         isFavoriteLocal = expense.isFavorite
         textExpenseTitle.text = expense.title
-        textAmount.text = getString(R.string.expense_amount_format, expense.amount)
+        textAmount.text = formatSignedAmount(expense.amount, expense.transactionType)
         textCategory.text = expense.category
         textDate.text = expense.date
         textDescription.text = expense.description.ifBlank {
@@ -167,6 +171,8 @@ class ExpenseDetailActivity : AppCompatActivity() {
         }
         textTransactionId.text = getString(R.string.expense_detail_transaction_id_format, expense.id)
         textCategoryType.text = categoryTypeLabel(expense.categoryType)
+        textPaymentMethod.text = paymentMethodLabel(expense.paymentMethod)
+        textTransactionType.text = transactionTypeLabel(expense.transactionType)
         applyCategoryIndicatorColor(expense.categoryType)
         refreshFavoriteUi()
         boundExpense = expense
@@ -238,7 +244,7 @@ class ExpenseDetailActivity : AppCompatActivity() {
 
     private fun shareCurrentExpense() {
         val expense = boundExpense ?: return
-        val amountText = getString(R.string.expense_amount_format, expense.amount)
+        val amountText = formatSignedAmount(expense.amount, expense.transactionType)
         val descriptionText = expense.description.ifBlank {
             getString(R.string.expense_share_description_empty)
         }
@@ -257,6 +263,26 @@ class ExpenseDetailActivity : AppCompatActivity() {
         startActivity(
             Intent.createChooser(sendIntent, getString(R.string.expense_share_chooser_title))
         )
+    }
+
+    private fun transactionTypeLabel(transactionType: String): String {
+        val labelRes = if (transactionType == TransactionType.INCOME) {
+            R.string.expense_transaction_type_income
+        } else {
+            R.string.expense_transaction_type_expense
+        }
+        return getString(labelRes)
+    }
+
+    private fun paymentMethodLabel(paymentMethod: String): String {
+        val labelRes = when (paymentMethod) {
+            PaymentMethod.CASH -> R.string.expense_payment_method_cash
+            PaymentMethod.DEBIT_CARD -> R.string.expense_payment_method_debit_card
+            PaymentMethod.CREDIT_CARD -> R.string.expense_payment_method_credit_card
+            PaymentMethod.BANK_TRANSFER -> R.string.expense_payment_method_bank_transfer
+            else -> R.string.expense_payment_method_other
+        }
+        return getString(labelRes)
     }
 
     companion object {

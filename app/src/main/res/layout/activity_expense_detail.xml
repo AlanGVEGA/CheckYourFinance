@@ -280,7 +280,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/expense_detail_label_status"
+                        android:text="@string/expense_detail_label_transaction_type"
                         android:textColor="@color/text_muted"
                         android:textSize="14sp" />
 
@@ -289,7 +289,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="end"
-                        android:text="@string/expense_detail_status_recorded"
+                        tools:text="@string/expense_transaction_type_expense"
                         android:textColor="@color/text_main"
                         android:textSize="14sp" />
 

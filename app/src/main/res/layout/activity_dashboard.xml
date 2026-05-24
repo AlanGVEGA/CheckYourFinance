@@ -86,9 +86,12 @@
             android:minHeight="48dp">
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/nav_add_fab"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
+                android:layout_gravity="center"
                 android:contentDescription="@string/content_desc_add"
+                android:scaleType="center"
                 android:src="@drawable/ic_add"
                 app:backgroundTint="@color/accent_bright_green"
                 app:elevation="2dp"
@@ -289,14 +292,15 @@
                     app:layout_constraintEnd_toEndOf="parent" />
 
                 <ImageView
+                    android:id="@+id/image_balance_icon"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
-                    android:layout_marginEnd="14dp"
-                    android:layout_marginBottom="14dp"
                     android:contentDescription="@string/content_desc_finance_icon"
                     android:src="@drawable/ic_wallet_finance"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/decor_circle"
+                    app:layout_constraintEnd_toEndOf="@id/decor_circle"
+                    app:layout_constraintStart_toStartOf="@id/decor_circle"
+                    app:layout_constraintTop_toTopOf="@id/decor_circle"
                     app:tint="@color/white" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -308,12 +312,13 @@
 
                 <TextView
                     android:id="@+id/text_summary_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_summary"
                     android:textColor="@color/text_main"
                     android:textSize="18sp"
                     android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/text_summary_filter"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -363,6 +368,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/text_summary_income_amount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
@@ -372,6 +378,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/text_summary_income_trend"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
@@ -390,6 +397,7 @@
                         android:padding="14dp">
 
                         <TextView
+                            android:id="@+id/text_summary_expenses_trend"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/dashboard_expenses"
@@ -408,6 +416,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/text_summary_savings_amount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
@@ -425,6 +434,7 @@
                         android:padding="14dp">
 
                         <TextView
+                            android:id="@+id/text_summary_savings_trend"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/dashboard_savings"
@@ -461,12 +471,13 @@
 
                 <TextView
                     android:id="@+id/text_spending_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_spending_by_category"
                     android:textColor="@color/text_main"
                     android:textSize="18sp"
                     android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/text_spending_view_all"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -490,6 +501,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
+                android:id="@+id/card_spending_categories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -548,6 +560,7 @@
                         app:layout_constraintTop_toBottomOf="@id/text_cat_food_amount" />
 
                     <ProgressBar
+                        android:id="@+id/progress_cat_food"
                         android:layout_width="0dp"
                         android:layout_height="8dp"
                         android:layout_marginTop="10dp"
@@ -616,6 +629,7 @@
                         app:layout_constraintTop_toBottomOf="@id/text_cat_transport_amount" />
 
                     <ProgressBar
+                        android:id="@+id/progress_cat_transport"
                         android:layout_width="0dp"
                         android:layout_height="8dp"
                         android:layout_marginTop="10dp"
@@ -683,6 +697,7 @@
                         app:layout_constraintTop_toBottomOf="@id/text_cat_shopping_amount" />
 
                     <ProgressBar
+                        android:id="@+id/progress_cat_shopping"
                         android:layout_width="0dp"
                         android:layout_height="8dp"
                         android:layout_marginTop="10dp"
@@ -750,6 +765,7 @@
                         app:layout_constraintTop_toBottomOf="@id/text_cat_bills_amount" />
 
                     <ProgressBar
+                        android:id="@+id/progress_cat_bills"
                         android:layout_width="0dp"
                         android:layout_height="8dp"
                         android:layout_marginTop="10dp"
@@ -817,6 +833,7 @@
                         app:layout_constraintTop_toBottomOf="@id/text_cat_entertainment_amount" />
 
                     <ProgressBar
+                        android:id="@+id/progress_cat_entertainment"
                         android:layout_width="0dp"
                         android:layout_height="8dp"
                         android:layout_marginTop="10dp"
@@ -829,6 +846,18 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/text_spending_empty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/dashboard_white_card"
+                android:padding="14dp"
+                android:text="@string/dashboard_no_transactions_yet"
+                android:textColor="@color/text_muted"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
             <!-- Recent Transactions -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -837,12 +866,13 @@
 
                 <TextView
                     android:id="@+id/text_recent_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/dashboard_recent_transactions"
                     android:textColor="@color/text_main"
                     android:textSize="18sp"
                     android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/text_recent_view_all"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -1035,6 +1065,18 @@
                         app:layout_constraintTop_toBottomOf="@id/text_tx3_amount" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/text_recent_empty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/dashboard_white_card"
+                android:padding="14dp"
+                android:text="@string/dashboard_no_recent_transactions"
+                android:textColor="@color/text_muted"
+                android:textSize="14sp"
+                android:visibility="gone" />
 
             <View
                 android:layout_width="match_parent"

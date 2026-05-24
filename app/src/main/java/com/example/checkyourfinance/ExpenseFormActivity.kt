@@ -33,6 +33,10 @@ class ExpenseFormActivity : AppCompatActivity() {
     private lateinit var inputAmount: TextInputEditText
     private lateinit var spinnerCategory: Spinner
     private lateinit var textCategoryError: TextView
+    private lateinit var spinnerTransactionType: Spinner
+    private lateinit var textTransactionTypeError: TextView
+    private lateinit var spinnerPaymentMethod: Spinner
+    private lateinit var textPaymentMethodError: TextView
     private lateinit var tilDate: TextInputLayout
     private lateinit var inputDate: TextInputEditText
     private lateinit var tilDescription: TextInputLayout
@@ -61,6 +65,8 @@ class ExpenseFormActivity : AppCompatActivity() {
         expenseId = intent.getIntExtra(EXTRA_EXPENSE_ID, -1)
 
         setupCategorySpinner()
+        setupTransactionTypeSpinner()
+        setupPaymentMethodSpinner()
         applyModeUi()
         loadExistingExpense()
 
@@ -99,6 +105,10 @@ class ExpenseFormActivity : AppCompatActivity() {
         inputAmount = findViewById(R.id.input_expense_amount)
         spinnerCategory = findViewById(R.id.spinner_category)
         textCategoryError = findViewById(R.id.text_category_error)
+        spinnerTransactionType = findViewById(R.id.spinner_transaction_type)
+        textTransactionTypeError = findViewById(R.id.text_transaction_type_error)
+        spinnerPaymentMethod = findViewById(R.id.spinner_payment_method)
+        textPaymentMethodError = findViewById(R.id.text_payment_method_error)
         tilDate = findViewById(R.id.til_expense_date)
         inputDate = findViewById(R.id.input_expense_date)
         tilDescription = findViewById(R.id.til_expense_description)
@@ -111,10 +121,30 @@ class ExpenseFormActivity : AppCompatActivity() {
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, labels)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerCategory.adapter = adapter
-        spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        spinnerCategory.onItemSelectedListener = hideErrorOnSelection(textCategoryError)
+    }
+
+    private fun setupTransactionTypeSpinner() {
+        val labels = resources.getStringArray(R.array.expense_form_transaction_types)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, labels)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerTransactionType.adapter = adapter
+        spinnerTransactionType.onItemSelectedListener = hideErrorOnSelection(textTransactionTypeError)
+    }
+
+    private fun setupPaymentMethodSpinner() {
+        val labels = resources.getStringArray(R.array.expense_form_payment_methods)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, labels)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerPaymentMethod.adapter = adapter
+        spinnerPaymentMethod.onItemSelectedListener = hideErrorOnSelection(textPaymentMethodError)
+    }
+
+    private fun hideErrorOnSelection(errorView: TextView): AdapterView.OnItemSelectedListener {
+        return object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if (position != 0) {
-                    textCategoryError.visibility = View.GONE
+                    errorView.visibility = View.GONE
                 }
             }
 
@@ -146,6 +176,8 @@ class ExpenseFormActivity : AppCompatActivity() {
         if (index > 0) {
             spinnerCategory.setSelection(index)
         }
+        spinnerTransactionType.setSelection(transactionTypeSpinnerIndex(expense.transactionType))
+        spinnerPaymentMethod.setSelection(paymentMethodSpinnerIndex(expense.paymentMethod))
     }
 
     private fun formatAmountForInput(amount: Double): String {
@@ -171,6 +203,10 @@ class ExpenseFormActivity : AppCompatActivity() {
         val categoryIndex = spinnerCategory.selectedItemPosition
         val categoryPair = ExpenseCategoryPicker.categoryFromSpinner(this, categoryIndex) ?: return
         val (categoryLabel, categoryType) = categoryPair
+        val transactionType = transactionTypeFromSpinner(spinnerTransactionType.selectedItemPosition)
+            ?: return
+        val paymentMethod = paymentMethodFromSpinner(spinnerPaymentMethod.selectedItemPosition)
+            ?: return
         val userId = app.sessionManager.getUserId()
         val now = System.currentTimeMillis()
 
@@ -183,8 +219,10 @@ class ExpenseFormActivity : AppCompatActivity() {
                     val updated = existing.copy(
                         title = title,
                         amount = amount,
+                        transactionType = transactionType,
                         category = categoryLabel,
                         categoryType = categoryType,
+                        paymentMethod = paymentMethod,
                         date = date,
                         description = description
                     )
@@ -195,8 +233,10 @@ class ExpenseFormActivity : AppCompatActivity() {
                         userId = userId,
                         title = title,
                         amount = amount,
+                        transactionType = transactionType,
                         category = categoryLabel,
                         categoryType = categoryType,
+                        paymentMethod = paymentMethod,
                         date = date,
                         description = description,
                         isFavorite = false,
@@ -210,8 +250,10 @@ class ExpenseFormActivity : AppCompatActivity() {
                     userId = userId,
                     title = title,
                     amount = amount,
+                    transactionType = transactionType,
                     category = categoryLabel,
                     categoryType = categoryType,
+                    paymentMethod = paymentMethod,
                     date = date,
                     description = description,
                     isFavorite = false,
@@ -238,6 +280,8 @@ class ExpenseFormActivity : AppCompatActivity() {
         val amountRaw = inputAmount.text?.toString()?.trim().orEmpty()
         val date = inputDate.text?.toString()?.trim().orEmpty()
         val categoryIndex = spinnerCategory.selectedItemPosition
+        val transactionTypeIndex = spinnerTransactionType.selectedItemPosition
+        val paymentMethodIndex = spinnerPaymentMethod.selectedItemPosition
 
         var ok = true
 
@@ -266,6 +310,18 @@ class ExpenseFormActivity : AppCompatActivity() {
             ok = false
         }
 
+        if (transactionTypeIndex <= 0) {
+            textTransactionTypeError.visibility = View.VISIBLE
+            textTransactionTypeError.text = getString(R.string.error_expense_transaction_type_required)
+            ok = false
+        }
+
+        if (paymentMethodIndex <= 0) {
+            textPaymentMethodError.visibility = View.VISIBLE
+            textPaymentMethodError.text = getString(R.string.error_expense_payment_method_required)
+            ok = false
+        }
+
         if (date.isEmpty()) {
             tilDate.error = getString(R.string.error_field_required)
             ok = false
@@ -280,11 +336,51 @@ class ExpenseFormActivity : AppCompatActivity() {
         tilDate.error = null
         tilDescription.error = null
         textCategoryError.visibility = View.GONE
+        textTransactionTypeError.visibility = View.GONE
+        textPaymentMethodError.visibility = View.GONE
     }
 
     private fun parseAmount(raw: String): Double? {
         val cleaned = raw.replace("$", "").replace(",", "").trim()
         return cleaned.toDoubleOrNull()
+    }
+
+    private fun transactionTypeFromSpinner(position: Int): String? {
+        return when (position) {
+            1 -> TransactionType.INCOME
+            2 -> TransactionType.EXPENSE
+            else -> null
+        }
+    }
+
+    private fun paymentMethodFromSpinner(position: Int): String? {
+        return when (position) {
+            1 -> PaymentMethod.CASH
+            2 -> PaymentMethod.DEBIT_CARD
+            3 -> PaymentMethod.CREDIT_CARD
+            4 -> PaymentMethod.BANK_TRANSFER
+            5 -> PaymentMethod.OTHER
+            else -> null
+        }
+    }
+
+    private fun transactionTypeSpinnerIndex(transactionType: String): Int {
+        return when (transactionType) {
+            TransactionType.INCOME -> 1
+            TransactionType.EXPENSE -> 2
+            else -> 0
+        }
+    }
+
+    private fun paymentMethodSpinnerIndex(paymentMethod: String): Int {
+        return when (paymentMethod) {
+            PaymentMethod.CASH -> 1
+            PaymentMethod.DEBIT_CARD -> 2
+            PaymentMethod.CREDIT_CARD -> 3
+            PaymentMethod.BANK_TRANSFER -> 4
+            PaymentMethod.OTHER -> 5
+            else -> 0
+        }
     }
 
     companion object {
