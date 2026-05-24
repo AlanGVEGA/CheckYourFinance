@@ -163,6 +163,62 @@
                     tools:text="@string/error_expense_category_required"
                     tools:visibility="visible" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/expense_field_transaction_type_label"
+                    android:textColor="@color/text_muted"
+                    android:textSize="13sp" />
+
+                <Spinner
+                    android:id="@+id/spinner_transaction_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/rounded_input"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp" />
+
+                <TextView
+                    android:id="@+id/text_transaction_type_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textColor="@color/text_error"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    tools:text="@string/error_expense_transaction_type_required"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/expense_field_payment_method_label"
+                    android:textColor="@color/text_muted"
+                    android:textSize="13sp" />
+
+                <Spinner
+                    android:id="@+id/spinner_payment_method"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/rounded_input"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp" />
+
+                <TextView
+                    android:id="@+id/text_payment_method_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textColor="@color/text_error"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    tools:text="@string/error_expense_payment_method_required"
+                    tools:visibility="visible" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_expense_date"
                     android:layout_width="match_parent"

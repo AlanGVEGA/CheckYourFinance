@@ -82,8 +82,8 @@ class ExpenseListActivity : AppCompatActivity() {
                 }
             }
             backingList = list
-            val total = list.sumOf { it.amount }
-            textTotalSpentAmount.text = getString(R.string.expense_amount_format, total)
+            val total = list.sumOf { signedAmount(it) }
+            textTotalSpentAmount.text = formatCurrencyAmount(total)
             renderList()
         }
     }
@@ -183,5 +183,13 @@ class ExpenseListActivity : AppCompatActivity() {
     private fun updateEmptyState(isEmpty: Boolean) {
         findViewById<View>(R.id.empty_state_container).visibility = if (isEmpty) View.VISIBLE else View.GONE
         findViewById<View>(R.id.recycler_expenses).visibility = if (isEmpty) View.GONE else View.VISIBLE
+    }
+
+    private fun signedAmount(expense: ExpenseUiModel): Double {
+        return if (expense.transactionType == TransactionType.INCOME) {
+            expense.amount
+        } else {
+            -expense.amount
+        }
     }
 }

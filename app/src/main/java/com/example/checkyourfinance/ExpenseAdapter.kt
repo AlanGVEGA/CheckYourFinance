@@ -53,7 +53,7 @@ class ExpenseAdapter(
             title.text = model.title
             category.text = model.category
             date.text = model.date
-            amount.text = itemView.context.getString(R.string.expense_amount_format, model.amount)
+            amount.text = formatSignedAmount(model.amount, model.transactionType)
             favorite.visibility = if (model.isFavorite) View.VISIBLE else View.GONE
 
             val indicatorColorRes = when (model.categoryType) {
