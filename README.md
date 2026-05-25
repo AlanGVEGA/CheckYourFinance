@@ -5,7 +5,13 @@
 **CheckYourFinance** — Aplicación Android nativa para gestión personal de finanzas y gastos.
 
 ---
+## Inicio rápido en 3 pasos
 
+```bash
+git clone https://github.com/AlanGVEGA/CheckYourFinance.git
+cd CheckYourFinance
+./gradlew installDebug
+```
 ## 2. Descripción general de la aplicación
 
 **CheckYourFinance** es una aplicación Android orientada a la gestión personal de ingresos y gastos. Permite **registro e inicio de sesión local**, **persistencia en el dispositivo** y operaciones **CRUD** sobre la entidad principal **Gasto (`Expense`)**.
@@ -28,10 +34,8 @@ La aplicación **no utiliza backend en la nube**: usuarios y transacciones se al
 
 - **Registro e inicio de sesión local** con validación de email y contraseña (mínimo 6 caracteres).
 - **Sesión persistente** mediante `SharedPreferences` (reapertura de la app sin volver a autenticarse).
-- **Dashboard** con resumen financiero: balance_id="1" content="Revisar estructura del repo y configuración Gradle" status="completed"/>
-- **Listado de gastos** con `RecyclerView`, filtros por categoría y total gastado.
-- **CRUD completo de gastos**: crear, ver detalle, editar y eliminar (con usuario autent cached).
-- **Marcar gastos como favoritos** (persistido en Room).
+- **Dashboard** con resumen financiero, navegación principal y estado de sesión.- **Listado de gastos** con `RecyclerView`, filtros por categoría y total gastado.
+- **CRUD completo de gastos**: crear, listar, ver detalle, editar y eliminar registros asociados al usuario autenticado.- **Marcar gastos como favoritos** (persistido en Room).
 - **Tipos de transacción** (`INCOME` / `EXPENSE`) y **métodos de pago** (efectivo, tarjetas, transferencia, etc.).
 - **Modo invitado** (*Continue as Guest*): acceso al dashboard con datos de demostración (`ExpenseSampleData`); el CRUD real requiere sesión iniciada.
 - **Compartir** un gasto como texto desde la pantalla de detalle.
@@ -43,7 +47,7 @@ La aplicación **no utiliza backend en la nube**: usuarios y transacciones se al
 
 | Tecnología | Versión / detalle | Uso en el proyecto |
 |------------|-------------------|-------------------|
-| **Kotlin** | No especificado explícitamente en el repositorio | Lenguaje principal |
+| **Kotlin** | `2.23.21` | Lenguaje principal |
 | **XML** | — | Layouts de interfaz (`res/layout/`) |
 | **Android Gradle Plugin (AGP)** | `9.1.0` | Compilación del módulo Android |
 | **Gradle** | `9.3.1` (Gradle Wrapper) | Sistema de compilación |
@@ -73,8 +77,6 @@ La aplicación **no utiliza backend en la nube**: usuarios y transacciones se al
 | **Repositorio** | `data/repository/FinanceRepository.kt` | API centralizada de acceso a datos |
 | **Sesión** | `session/SessionManager.kt` | Estado de login en SharedPreferences |
 | **Application** | `CheckYourFinanceApplication.kt` | Inicialización de base de datos, repositorio y sesión |
-
-Documentación arquitectónica ampliada: [`DOCUMENTO_TECNICO.md`](DOCUMENTO_TECNICO.md).
 
 ---
 
@@ -120,8 +122,8 @@ CheckYourFinance/
 ├── gradle.properties
 ├── gradlew                           # Wrapper Gradle (Linux/macOS)
 ├── gradlew.bat                       # Wrapper Gradle (Windows)
-├── DOCUMENTO_TECNICO.md              # Documentación técnica ampliada
-└── README.md                         # Este archivo
+# Documentación técnica ampliada
+└── README.md                         
 ```
 
 ---
@@ -130,7 +132,7 @@ CheckYourFinance/
 
 | Requisito | Valor detectado en el repositorio |
 |-----------|-----------------------------------|
-| **Android Studio (versión recomendada)** | No especificado en el repositorio |
+| **Android Studio (versión recomendada)** | `Panda 2 2025.3.2` |
 | **Android Gradle Plugin** | `9.1.0` |
 | **Gradle** | `9.3.1` (incluido vía Gradle Wrapper) |
 | **JDK** | `11` (`sourceCompatibility` / `targetCompatibility` en `app/build.gradle.kts`) |
@@ -252,21 +254,7 @@ La clase `AppDatabase` se inicializa en `CheckYourFinanceApplication`.
 
 ---
 
-## 12. Capturas de pantalla
-
-> No se encontraron imágenes de capturas de pantalla en el repositorio.
->
-> Se recomienda añadir capturas de las pantallas principales en una carpeta como `docs/screenshots/`:
->
-> - Login / Registro (`MainActivity`)
-> - Dashboard (`DashboardActivity`)
-> - Listado de gastos (`ExpenseListActivity`)
-> - Detalle de gasto (`ExpenseDetailActivity`)
-> - Formulario crear/editar (`ExpenseFormActivity`)
-
----
-
-## 13. Estado del proyecto
+## 12. Estado del proyecto
 
 | Aspecto | Estado |
 |---------|--------|
@@ -280,21 +268,15 @@ La clase `AppDatabase` se inicializa en `CheckYourFinanceApplication`.
 | **Recuperación de contraseña** | No implementado (mensaje "coming soon") |
 | **Inicio de sesión con Google / Apple** | No implementado (mensaje "coming soon") |
 
-Estado general: **proyecto funcional en fase beta**, apto para demostración y entrega académica.
+Estado general: **proyecto funcional en fase beta**, apto para demostración.
 
 ---
 
-## 14. Autor o equipo
+## 13. Autor o equipo
 
 Alan Gabriel Vega Tinajaca
 
-*(Información presente en la documentación previa del repositorio; no aparece en el código fuente de la aplicación.)*
-
 ---
-
-## 15. Notas para entrega académica
-
-Este proyecto cumple con los requisitos típicos de una entrega de **Android Studio con instrucciones en README.md**, incluyendo **versión de SDK**, **cómo compilar** y **cómo ejecutar** la aplicación.
 
 ### Pantallas principales (Activities)
 
@@ -306,35 +288,10 @@ Este proyecto cumple con los requisitos típicos de una entrega de **Android Stu
 | 4 | `ExpenseDetailActivity` | Detalle del gasto |
 | 5 | `ExpenseFormActivity` | Formulario para crear o editar |
 
-### Flujo de prueba recomendado
 
-1. **Registrar** un usuario nuevo (email único, contraseña ≥ 6 caracteres).
-2. **Iniciar sesión** con ese usuario (o cerrar sesión y volver a entrar).
-3. **Crear** un gasto desde el listado (FAB) o desde el dashboard.
-4. **Verificar el listado** y confirmar que el ítem aparece.
-5. **Abrir el detalle** tocando una fila.
-6. **Editar** el gasto y guardar; verificar cambios en detalle y lista.
-7. **Eliminar** el gasto (diálogo de confirmación) y confirmar que desaparece.
-8. **Cerrar sesión** desde el icono de perfil en el dashboard.
-
-### Consideraciones técnicas para la defensa
+### Consideraciones técnicas
 
 - Los datos son **locales**; desinstalar la app puede borrar la base de datos.
 - Las contraseñas se almacenan como **hash SHA-256** con fines educativos; no es un esquema de seguridad de producción.
 - La arquitectura es **MVC + Repository**, no MVVM completo.
-- La carpeta `build/` está en `.gitignore` y **no debe incluirse** en el ZIP de entrega.
-- Evitar incluir `local.properties` con rutas locales sensibles en la entrega.
-- Documentación técnica adicional: [`DOCUMENTO_TECNICO.md`](DOCUMENTO_TECNICO.md).
-
 ---
-
-## Referencia rápida de SDK
-
-| Parámetro | Valor |
-|-----------|-------|
-| **compileSdk** | 36 |
-| **minSdk** | 24 |
-| **targetSdk** | 36 |
-| **JDK** | 11 |
-| **Gradle** | 9.3.1 |
-| **AGP** | 9.1.0 |
